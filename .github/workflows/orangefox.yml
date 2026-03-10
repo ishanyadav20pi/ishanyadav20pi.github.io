@@ -55,9 +55,9 @@ jobs:
           git clone ${{ env.DEVICE_TREE_URL }} -b ${{ env.DEVICE_TREE_BRANCH }} ${{ env.DEVICE_PATH }}
           # Fix the product naming mismatch within the device tree makefiles
           find ${{ env.DEVICE_PATH }} -name "*.mk" -exec sed -i 's/n200/dre/g' {} +
+          # Fix duplicate libandroidicu build rules
+          find ${{ env.DEVICE_PATH }} -name "*.mk" -exec sed -i '/libandroidicu/d' {} +
           mv ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk ${{ env.DEVICE_PATH }}/twrp_dre.mk
-          # Fix duplicate libandroidicu.so build rule
-          sed -i '/libandroidicu.so/d' ${{ env.DEVICE_PATH }}/device.mk
 
       - name: Build Recovery Image
         run: |
