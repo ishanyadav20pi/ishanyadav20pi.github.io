@@ -54,8 +54,7 @@ jobs:
           cd ${{ github.workspace }}/orangefox
           git clone ${{ env.DEVICE_TREE_URL }} -b ${{ env.DEVICE_TREE_BRANCH }} ${{ env.DEVICE_PATH }}
           # Fix the product naming mismatch within the device tree makefiles
-          sed -i 's/n200/dre/g' ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk
-          sed -i 's/n200/dre/g' ${{ env.DEVICE_PATH }}/AndroidProducts.mk
+          find ${{ env.DEVICE_PATH }} -name "*.mk" -exec sed -i 's/n200/dre/g' {} +
           mv ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk ${{ env.DEVICE_PATH }}/twrp_dre.mk
 
       - name: Build Recovery Image
