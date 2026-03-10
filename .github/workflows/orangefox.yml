@@ -63,8 +63,10 @@ jobs:
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
           export LC_ALL="C"
+          set +e
           source build/envsetup.sh
           lunch twrp_dre-userdebug
+          set -e
           mka ${{ env.MAKE_TARGET }}
 
       - name: Upload Artifact
