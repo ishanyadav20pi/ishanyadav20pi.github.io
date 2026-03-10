@@ -13,7 +13,7 @@ jobs:
       DEVICE_TREE_BRANCH: master
       DEVICE_PATH: device/oneplus/dre
       DEVICE_NAME: twrp_n200
-      MAKE_TARGET: recoveryimage
+      MAKE_TARGET: bootimage
 
     steps:
       - name: Checkout WorkSpace
@@ -64,6 +64,7 @@ jobs:
           cd ${{ github.workspace }}/orangefox
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
+          export FOX_VIRTUAL_AB_DEVICE=1
           export LC_ALL="C"
           set +e
           source build/envsetup.sh
@@ -78,5 +79,4 @@ jobs:
           path: |
             ${{ github.workspace }}/orangefox/out/target/product/dre/OrangeFox*.img
             ${{ github.workspace }}/orangefox/out/target/product/dre/OrangeFox*.zip
-            ${{ github.workspace }}/orangefox/out/target/product/dre/recovery.img
             ${{ github.workspace }}/orangefox/out/target/product/dre/boot.img
