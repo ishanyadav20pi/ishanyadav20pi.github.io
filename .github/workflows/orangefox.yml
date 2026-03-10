@@ -1,0 +1,74 @@
+name: OrangeFox Recovery CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build OrangeFox Recovery (dre)
+    runs-on: ubuntu-22.04
+    env:
+      MANIFEST_BRANCH: fox_12.1
+      DEVICE_TREE_URL: https://github.com/Travisholt92/twrp_n200.git
+      DEVICE_TREE_BRANCH: main
+      DEVICE_PATH: device/oneplus/dre
+      DEVICE_NAME: twrp_n200
+      MAKE_TARGET: recoveryimage
+
+    steps:
+      - name: Checkout WorkSpace
+        uses: actions/checkout@v3
+
+      - name: Maximize Build Space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 1024
+          swap-size-mb: 8192
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
+      - name: Setup Build Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git aria2 python3 wget curl lzop bison gperf build-essential zip zlib1g-dev g++-multilib python3-networkx libxml2-utils bzip2 libbz2-dev squashfs-tools schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3-pip rsync python-is-python3
+          mkdir -p ~/bin
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+
+      - name: Sync OrangeFox Source
+        run: |
+          mkdir -p ~/orangefox
+          cd ~/orangefox
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git clone https://gitlab.com/OrangeFox/sync.git ~/sync
+          cd ~/sync
+          ./orangefox_sync.sh --branch ${{ env.MANIFEST_BRANCH }} --path ~/orangefox
+          
+      - name: Clone Device Tree
+        run: |
+          cd ~/orangefox
+          git clone ${{ env.DEVICE_TREE_URL }} -b ${{ env.DEVICE_TREE_BRANCH }} ${{ env.DEVICE_PATH }}
+          # Fix the product naming mismatch within the device tree makefiles
+          sed -i 's/n200/dre/g' ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk
+          sed -i 's/n200/dre/g' ${{ env.DEVICE_PATH }}/AndroidProducts.mk
+          mv ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk ${{ env.DEVICE_PATH }}/twrp_dre.mk
+
+      - name: Build Recovery Image
+        run: |
+          cd ~/orangefox
+          export ALLOW_MISSING_DEPENDENCIES=true
+          export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
+          export LC_ALL="C"
+          source build/envsetup.sh
+          lunch twrp_dre-userdebug
+          mka ${{ env.MAKE_TARGET }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: OrangeFox-Unofficial-dre
+          path: /home/runner/orangefox/out/target/product/dre/recovery.img
