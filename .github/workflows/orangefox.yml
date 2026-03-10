@@ -8,8 +8,7 @@ jobs:
     name: Build OrangeFox Recovery (dre)
     runs-on: ubuntu-22.04
     env:
-      MANIFEST_URL: https://gitlab.com/OrangeFox/Manifest.git
-      MANIFEST_BRANCH: fox_12.1
+      MANIFEST_BRANCH: 12.1
       DEVICE_TREE_URL: https://github.com/Travisholt92/twrp_n200.git
       DEVICE_TREE_BRANCH: master
       DEVICE_PATH: device/oneplus/dre
@@ -46,9 +45,10 @@ jobs:
           cd ${{ github.workspace }}/orangefox
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          repo init -u ${{ env.MANIFEST_URL }} -b ${{ env.MANIFEST_BRANCH }} --depth=1
-          repo sync -c -j$(nproc) --force-sync --no-clone-bundle --no-tags
-
+          git clone https://gitlab.com/OrangeFox/sync.git ${{ github.workspace }}/sync
+          cd ${{ github.workspace }}/sync
+          ./orangefox_sync.sh --branch ${{ env.MANIFEST_BRANCH }} --path ${{ github.workspace }}/orangefox
+          
       - name: Clone Device Tree
         run: |
           cd ${{ github.workspace }}/orangefox
