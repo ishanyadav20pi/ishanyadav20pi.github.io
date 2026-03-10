@@ -50,7 +50,7 @@ jobs:
           
       - name: Clone Device Tree
         run: |
-          cd /home/runner/work/orangefox
+          cd /home/runner/work/orangefox/fox_12.1
           git clone ${{ env.DEVICE_TREE_URL }} -b ${{ env.DEVICE_TREE_BRANCH }} ${{ env.DEVICE_PATH }}
           # Fix the product naming mismatch within the device tree makefiles
           sed -i 's/n200/dre/g' ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk
@@ -59,7 +59,7 @@ jobs:
 
       - name: Build Recovery Image
         run: |
-          cd /home/runner/work/orangefox
+          cd /home/runner/work/orangefox/fox_12.1
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
           export LC_ALL="C"
@@ -71,4 +71,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OrangeFox-Unofficial-dre
-          path: /home/runner/orangefox/out/target/product/dre/recovery.img
+          path: /home/runner/work/orangefox/fox_12.1/out/target/product/dre/recovery.img
