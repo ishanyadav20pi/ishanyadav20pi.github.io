@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout WorkSpace
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Maximize Build Space
         uses: easimon/maximize-build-space@master
@@ -68,7 +68,7 @@ jobs:
           mka ${{ env.MAKE_TARGET }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OrangeFox-Unofficial-dre
           path: /home/runner/orangefox/out/target/product/dre/recovery.img
