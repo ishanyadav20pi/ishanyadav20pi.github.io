@@ -24,7 +24,6 @@ jobs:
         with:
           root-reserve-mb: 1024
           swap-size-mb: 8192
-          build-mount-path: '/home/runner/work'
           remove-dotnet: 'true'
           remove-android: 'true'
           remove-haskell: 'true'
@@ -41,17 +40,17 @@ jobs:
 
       - name: Sync OrangeFox Source
         run: |
-          mkdir -p ~/orangefox
-          cd ~/orangefox
+          mkdir -p /home/runner/work/orangefox
+          cd /home/runner/work/orangefox
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git clone https://gitlab.com/OrangeFox/sync.git ~/sync
           cd ~/sync
-          ./orangefox_sync.sh --branch ${{ env.MANIFEST_BRANCH }} --path ~/orangefox
+          ./orangefox_sync.sh --branch ${{ env.MANIFEST_BRANCH }} --path /home/runner/work/orangefox
           
       - name: Clone Device Tree
         run: |
-          cd ~/orangefox
+          cd /home/runner/work/orangefox
           git clone ${{ env.DEVICE_TREE_URL }} -b ${{ env.DEVICE_TREE_BRANCH }} ${{ env.DEVICE_PATH }}
           # Fix the product naming mismatch within the device tree makefiles
           sed -i 's/n200/dre/g' ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk
@@ -60,7 +59,7 @@ jobs:
 
       - name: Build Recovery Image
         run: |
-          cd ~/orangefox
+          cd /home/runner/work/orangefox
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
           export LC_ALL="C"
