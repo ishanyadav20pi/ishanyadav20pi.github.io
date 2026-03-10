@@ -68,7 +68,3 @@ jobs:
         with:
           name: OrangeFox-Unofficial-dre
           path: ${{ github.workspace }}/orangefox/fox_12.1/out/target/product/dre/recovery.img
-
-        with:
-          name: OrangeFox-Unofficial-dre
-          path: ${{ github.workspace }}/orangefox/fox_12.1/out/target/product/dre/recovery.img
