@@ -57,6 +57,11 @@ jobs:
           find ${{ env.DEVICE_PATH }} -name "*.mk" -exec sed -i 's/n200/dre/g' {} +
           # Fix duplicate libandroidicu build rule without breaking Makefile syntax
           sed -i '/^# Apex libraries/,/libandroidicu\.so/d' ${{ env.DEVICE_PATH }}/device.mk
+          # Convert deprecated TARGET_PREBUILT_DTB to modern AOSP BOARD_PREBUILT_DTBIMAGE_DIR
+          sed -i '/TARGET_PREBUILT_DTB/d' ${{ env.DEVICE_PATH }}/BoardConfig.mk
+          sed -i 's|# BOARD_PREBUILT_DTBIMAGE_DIR|BOARD_PREBUILT_DTBIMAGE_DIR|g' ${{ env.DEVICE_PATH }}/BoardConfig.mk
+          mkdir -p ${{ env.DEVICE_PATH }}/prebuilt/dtb
+          cp ${{ env.DEVICE_PATH }}/prebuilt/dtb.img ${{ env.DEVICE_PATH }}/prebuilt/dtb/prebuilt.dtb
           mv ${{ env.DEVICE_PATH }}/${{ env.DEVICE_NAME }}.mk ${{ env.DEVICE_PATH }}/twrp_dre.mk
 
       - name: Build Recovery Image
